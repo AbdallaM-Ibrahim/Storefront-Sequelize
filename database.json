@@ -1,16 +1,16 @@
 {
   "dev": {
-    "driver": "pg",
-    "host": "127.0.0.1",
-    "database": "store_db",
-    "user": "store_user",
-    "password": "password123"
+    "driver": {"ENV": "DB_DRIVER"},
+    "host": {"ENV": "DB_HOST"},
+    "database": {"ENV": "DB_NAME"},
+    "user": {"ENV": "DB_USERNAME"},
+    "password": {"ENV": "DB_PASSWORD"}
   },
   "test": {
-    "driver": "pg",
-    "host": "127.0.0.1",
-    "database": "store_test_db",
-    "user": "store_user",
-    "password": "password123"
+    "driver": {"ENV": "DB_DRIVER"},
+    "host": {"ENV": "DB_HOST"},
+    "database": {"ENV": "DB_NAME_Test"},
+    "user": {"ENV": "DB_USERNAME"},
+    "password": {"ENV": "DB_PASSWORD"}
   }
 }

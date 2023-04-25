@@ -2,7 +2,7 @@ import { User, Store as UserDB } from '../../models/user';
 const userDB: UserDB = new UserDB();
 
 describe("user model", () => {
-  const user: User = {
+  const user = {
     firstname: "John",
     lastname: "Wick",
     password: "some string",
@@ -20,13 +20,13 @@ describe("user model", () => {
   })
 
   it('should get one user', async () => {
-    const user_1: User = await userDB.show('1');
+    const user_1: User = await userDB.show(1);
     expect(user_1.firstname).toEqual(user.firstname);
     expect(user_1.lastname).toEqual(user.lastname);
   })
   
   it('should remove the user', async () => {
-    await userDB.delete("1")
+    await userDB.delete(1);
     const users: User[] = await userDB.index();
     expect(users).toEqual([]);
   })

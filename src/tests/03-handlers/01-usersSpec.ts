@@ -2,10 +2,11 @@ import supertest from 'supertest';
 import { User } from '../../models/user';
 import app from '../../server';
 import jwt, { Secret } from 'jsonwebtoken';
+import { config } from '../../config/config'
 const request = supertest(app);
 
 describe('users handler', () => {
-  const user: User = {
+  const user = {
     firstname: 'John',
     lastname: "Wick",
     password: "password123"
@@ -27,11 +28,11 @@ describe('users handler', () => {
       token = response.body
       user_data = (jwt.verify(
         token,
-        process.env.TOKEN_SECRET as Secret
+        config.token_secret as Secret
         ) as Decoded_Token).user;
     })
     it("expects created user", async () => {
-      expect(user_data.id).not.toEqual(undefined)
+      expect(user_data.id).not.toBeNull();
     })
   })
 
@@ -40,7 +41,7 @@ describe('users handler', () => {
       .get('/users')
       .set({'Authorization': 'Bearer ' + token})
       .expect(200)
-    expect(response.body).toEqual([user_data])
+    expect(response.body as User[]).toEqual([user_data])
   })
 
   it("should get one user", async () => {
@@ -48,14 +49,14 @@ describe('users handler', () => {
       .get(`/users/${user_data.id}`)
       .set({'Authorization': 'Bearer ' + token})
       .expect(200)
-    expect(response.body).toEqual(user_data)
+    expect(response.body as User).toEqual(user_data)
   })
 
   it("should get delete user", async () => {
     await request
       .delete(`/users/${user_data.id}`)
       .set({'Authorization': 'Bearer ' + token})
-      .expect(200)
+      .expect(204)
     const users_in_db = (await request
       .get('/users')
       .set({'Authorization': 'Bearer ' + token})

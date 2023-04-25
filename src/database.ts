@@ -4,11 +4,11 @@ import { Pool } from 'pg';
 dotenv.config();
 
 const {
-  POSTGRES_HOST,
-  POSTGRES_DB,
-  POSTGRES_USER,
-  POSTGRES_PASSWORD,
-  POSTGRES_TEST_DB,
+  DB_HOST,
+  DB_NAME,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_NAME_TEST,
   ENV
 } = process.env;
 
@@ -17,17 +17,17 @@ console.log(`Current ENV: ${ENV}`);
 
 if (ENV === 'dev') {
   Client = new Pool({
-    host: POSTGRES_HOST,
-    database: POSTGRES_DB,
-    user: POSTGRES_USER,
-    password: POSTGRES_PASSWORD
+    host: DB_HOST,
+    database: DB_NAME,
+    user: DB_USERNAME,
+    password: DB_PASSWORD
   });
 } else if (ENV === 'test') {
   Client = new Pool({
-    host: POSTGRES_HOST,
-    database: POSTGRES_TEST_DB,
-    user: POSTGRES_USER,
-    password: POSTGRES_PASSWORD
+    host: DB_HOST,
+    database: DB_NAME_TEST,
+    user: DB_USERNAME,
+    password: DB_PASSWORD
   });
 } else {
   throw new Error('Invalid environment');

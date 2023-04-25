@@ -5,13 +5,14 @@ import { User } from '../../models/user';
 import jwt, { Secret } from 'jsonwebtoken';
 import { Product } from '../../models/product';
 import { Order_Product } from '../../models/order_product';
+import { config } from '../../config/config';
 const request = supertest(app);
 
 describe('orders handler', () => {
   let order: Order;
   let order_data: Order;
 
-  const user: User = {
+  const user = {
     firstname: 'John',
     lastname: "Wick",
     password: "password123"
@@ -32,7 +33,7 @@ describe('orders handler', () => {
     ).body;
     user_data = (jwt.verify(
       token,
-      process.env.TOKEN_SECRET as Secret
+      config.token_secret as Secret
     ) as Decoded_Token).user
     order = {
       user_id: user_data.id as unknown as string,
@@ -44,7 +45,7 @@ describe('orders handler', () => {
     await request
       .delete(`/users/${user_data.id}`)
       .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)
+      .expect(204)
   })
 
   it("should create order", async () => {
@@ -83,7 +84,7 @@ describe('orders handler', () => {
     }
 
 
-    const user: User = {
+    const user = {
       firstname: 'John',
       lastname: "Wick",
       password: "password123"
@@ -131,7 +132,7 @@ describe('orders handler', () => {
       await request
         .delete(`/users/${user_data.id}`)
         .set({ 'Authorization': 'Bearer ' + token })
-        .expect(200)
+        .expect(204)
     })
 
     it(`should get all order's products`, async () => {

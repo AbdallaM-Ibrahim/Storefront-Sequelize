@@ -2,11 +2,12 @@ import supertest from 'supertest';
 import app from '../../server';
 import { User } from '../../models/user';
 import jwt, { Secret } from 'jsonwebtoken';
+import { config } from '../../config/config'
 const request = supertest(app);
 
 describe('dashboard handler', () => {
 
-  const user: User = {
+  const user = {
     firstname: 'John',
     lastname: "Wick",
     password: "password123"
@@ -28,7 +29,7 @@ describe('dashboard handler', () => {
     ).body;
     user_data = (jwt.verify(
       token,
-      process.env.TOKEN_SECRET as Secret
+      config.token_secret as Secret
     ) as Decoded_Token).user
   })
 
@@ -36,7 +37,7 @@ describe('dashboard handler', () => {
     await request
       .delete(`/users/${user_data.id}`)
       .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)
+      .expect(204)
   })
 
   describe('products functions', () => {

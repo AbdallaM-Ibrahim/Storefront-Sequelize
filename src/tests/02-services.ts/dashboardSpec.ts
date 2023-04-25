@@ -6,7 +6,7 @@ const dashboardQueries: DashboardQueries = new DashboardQueries();
 
 describe("dashboard functionality", () => {
   describe("order dashboard", () => {
-    const user: User = {
+    const user = {
       firstname: "John",
       lastname: "Wick",
       password: "some string",
@@ -17,7 +17,7 @@ describe("dashboard functionality", () => {
       user_data = await (new UserDB()).create(user);
     })
     afterAll(async () => {
-      await (new UserDB()).delete(String(user_data.id))
+      await (new UserDB()).delete(user_data.id)
     })
 
     it("should get current order", async () => {

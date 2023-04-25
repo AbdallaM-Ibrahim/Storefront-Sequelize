@@ -4,7 +4,7 @@ import { User, Store as UserDB } from '../../models/user';
 const orderDB: OrderDB = new OrderDB();
 
 describe("order model", () => {
-  const user: User = {
+  const user = {
     firstname: "John",
     lastname: "Wick",
     password: "some string",
@@ -20,7 +20,7 @@ describe("order model", () => {
   })
 
   afterAll(async () => {
-    await (new UserDB()).delete("2");
+    await (new UserDB()).delete(2);
   })
 
   it("should create new order", async () => {

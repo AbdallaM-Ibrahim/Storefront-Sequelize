@@ -4,6 +4,7 @@ import { authToken } from '../middlewares/auth'
 import { Order } from '../models/order'
 import { User, Store as UsersDB } from '../models/user'
 import { DashboardQueries } from '../services/dashboard'
+import { config } from '../config/config'
 
 const usersDB = new UsersDB()
 const dashboard = new DashboardQueries()
@@ -22,7 +23,7 @@ const index = async (_req: Request, res: Response): Promise<void> => {
 
 const show = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id: string = req.params.id
+    const id = Number(req.params.id)
     const user: User = await usersDB.show(id)
     res.json(user)
   } catch (err: unknown) {
@@ -34,14 +35,14 @@ const show = async (req: Request, res: Response): Promise<void> => {
 
 const create = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user: User = {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      password: req.body.password
+    const user = {
+      firstname: req.body.firstname as string,
+      lastname: req.body.lastname as string,
+      password: req.body.password as string
     }
 
     const newUser: User = await usersDB.create(user)
-    const token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET as Secret)
+    const token = jwt.sign({ user: newUser }, config.token_secret as Secret)
     res.status(201).json(token)
   } catch (err: unknown) {
     res.status(400)
@@ -52,9 +53,9 @@ const create = async (req: Request, res: Response): Promise<void> => {
 
 const destroy = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id: string = req.params.id
-    const deleted: User = await usersDB.delete(id)
-    res.json(deleted)
+    const id = Number(req.params.id)
+    await usersDB.delete(id)
+    res.status(204).json()
   } catch (err: unknown) {
     res.status(400)
     if(err instanceof Error)

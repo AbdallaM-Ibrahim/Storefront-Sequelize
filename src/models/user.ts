@@ -1,101 +1,99 @@
-import Client from '../database'
-import bcrypt from 'bcrypt'
+import { sequelize } from "../sequelize";
+import { Model, DataTypes } from "sequelize";
+import { config } from '../config/config';
+import bcrypt from "bcrypt";
 
-export type User = {
-  id?: number;
-  firstname: string;
-  lastname: string;
-  password: string;
+export class User extends Model {
+  public id!: number;
+  public firstname!: string;
+  public lastname!: string;
+  public password!: string;
 }
+
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    firstname: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+    },
+    lastname: {
+      type: new DataTypes.STRING(128),
+      allowNull: false,
+    },
+    password: {
+      type: new DataTypes.STRING(256),
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: false,
+    tableName: "users",
+    sequelize,
+  }
+);
 
 export class Store {
   async index(): Promise<User[]> {
-    try {
-      const conn = await Client.connect()
-      const sql = 'SELECT * FROM users'
-
-      const result = await conn.query(sql)
-
-      conn.release()
-
-      return result.rows
-    } catch (err) {
-      throw new Error(`Could not get users. Error: ${err}`)
-    }
+    const users = await User.findAll();
+    return users;
   }
 
-  async show(id: string): Promise<User> {
+  async show(id: number): Promise<User> {
     try {
-      const sql = 'SELECT * FROM users WHERE id=($1)'
-      const conn = await Client.connect()
-
-      const result = await conn.query(sql, [id])
-
-      conn.release()
-
-      return result.rows[0]
+      const user: User = await User.findByPk(id) || (() => { throw new Error(`table returned null`) })();
+      return user;
     } catch (err) {
       throw new Error(`Could not find user ${id}. Error: ${err}`)
     }
   }
 
-  async create(u: User): Promise<User> {
+  async create(user: { firstname: string; lastname: string; password: string; }): Promise<User> {
     try {
-      const sql = 'INSERT INTO users (firstname, lastname, password) VALUES($1, $2, $3) RETURNING *'
-      const { PEPPER, SALT_ROUNDS } = process.env
-      const hash: string = bcrypt.hashSync(
-        u.password + PEPPER,
-        parseInt(SALT_ROUNDS || '10')
-      )
-      const conn = await Client.connect()
-      const result = await conn
-        .query(sql, [u.firstname, u.lastname, hash])
-
-      const user = result.rows[0]
-
-      conn.release()
-
-      return user
+      const { pepper, salt_rounds } = config;
+      user.password = bcrypt.hashSync(
+        user.password + pepper,
+        salt_rounds || 10
+      );
+      const newUser: User = await User.create(user);
+      return newUser;
     } catch (err) {
-      throw new Error(`Could not add new user ${u.firstname}. Error: ${err}`)
+      throw new Error(`Could not add new user ${user.firstname}. Error: ${err}`)
     }
   }
 
   async authenticate(id: number, password: string): Promise<User | null> {
     try {
-      const conn = await Client.connect()
-      const sql = 'SELECT password FROM users WHERE id=($1) RETURNING *'
-      const result = await conn
-        .query(sql, [id])
-      conn.release()
-
-        if(result.rows.length) {
-          const { PEPPER } = process.env
-          const user = result.rows[0]
-          if (bcrypt.compareSync(password + PEPPER, user.password)) {
-            return user
-          }
-        }
-      return null
+      const user: User = await this.show(id);
+      const { pepper } = config;
+      if (bcrypt.compareSync(password + pepper, user.password)) {
+        return user;
+      }
+      return null;
     } catch (err) {
-      throw new Error(`Failed authenticating user ${id}. Error: ${err}`)
+      throw new Error(`Could not authenticate user ${id}. Error: ${err}`);
     }
   }
 
-  async delete(id: string): Promise<User> {
-    try {
-      const sql = 'DELETE FROM users WHERE id=($1) RETURNING *'
-      const conn = await Client.connect()
+  async update(user: { id: number; firstname: string; lastname: string; password: string; }): Promise<number> {
+    const [updatedUser] = await User.update(user, {
+      where: {
+        id: user.id,
+      },
+    });
+    return updatedUser;
+  }
 
-      const result = await conn.query(sql, [id])
-
-      const user: User = result.rows[0]
-
-      conn.release()
-
-      return user
-    } catch (err) {
-      throw new Error(`Could not delete user ${id}. Error: ${err}`)
-    }
+  async delete(id: number): Promise<number> {
+    const deletedUser = await User.destroy({
+      where: {
+        id: id,
+      },
+    });
+    return deletedUser;
   }
 }

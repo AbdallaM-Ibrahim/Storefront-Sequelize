@@ -2,10 +2,11 @@ import supertest from 'supertest';
 import { User } from '../../models/user';
 import app from '../../server';
 import jwt, { Secret } from 'jsonwebtoken';
+import { config } from '../../config/config';
 const request = supertest(app);
 
 describe('token authorization', () => {
-  const user: User = {
+  const user = {
     firstname: 'John',
     lastname: "Wick",
     password: "password123"
@@ -27,7 +28,7 @@ describe('token authorization', () => {
     token = response.body
     token_payload = jwt.verify(
       token,
-      process.env.TOKEN_SECRET as Secret
+      config.token_secret as Secret
     ) as Decoded_Token;
   })
 
@@ -35,7 +36,7 @@ describe('token authorization', () => {
     await request
       .delete(`/users/${token_payload.user?.id}`)
       .set({'Authorization': 'Bearer ' + token})
-      .expect(200)
+      .expect(204)
   })
 
   it("should require token", async () => {
