@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { Order, Status, Store as OrdersDB } from '../models/order'
+import { Order, Store as OrdersDB } from '../models/order'
 import { Order_Product, Store as OP_DB } from '../models/order_product'
 import { authToken } from '../middlewares/auth'
 
@@ -20,7 +20,7 @@ const index = async (_req: Request, res: Response): Promise<void> => {
 
 const show = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id: string = req.params.id
+    const id = Number(req.params.id)
     const order: Order = await ordersDB.show(id)
     res.json(order)
   } catch (err: unknown) {
@@ -32,9 +32,9 @@ const show = async (req: Request, res: Response): Promise<void> => {
 
 const create = async (req: Request, res: Response): Promise<void> => {
   try {
-    const order: Order = {
+    const order = {
       user_id: req.body.user_id,
-      status: req.body.status as Status
+      status: req.body.status
     }
 
     const newOrder: Order = await ordersDB.create(order)
@@ -48,9 +48,9 @@ const create = async (req: Request, res: Response): Promise<void> => {
 
 const destroy = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id: string = req.params.id
-    const deleted: Order = await ordersDB.delete(id)
-    res.json(deleted)
+    const id = Number(req.params.id)
+    await ordersDB.delete(id);
+    res.status(204).end();
   } catch (err: unknown) {
     res.status(400)
     if(err instanceof Error)

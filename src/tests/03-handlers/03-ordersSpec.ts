@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import { Order, Status } from '../../models/order';
+import { Order } from '../../models/order';
 import app from '../../server';
 import { User } from '../../models/user';
 import jwt, { Secret } from 'jsonwebtoken';
@@ -9,7 +9,7 @@ import { config } from '../../config/config';
 const request = supertest(app);
 
 describe('orders handler', () => {
-  let order: Order;
+  let order: {id?: number, user_id: string, status: string };
   let order_data: Order;
 
   const user = {
@@ -37,7 +37,7 @@ describe('orders handler', () => {
     ) as Decoded_Token).user
     order = {
       user_id: user_data.id as unknown as string,
-      status: Status.active
+      status: 'active'
     }
   })
 
@@ -55,7 +55,7 @@ describe('orders handler', () => {
       .send(order)
       .expect(201);
     order_data = response.body;
-    expect(order_data.id).not.toEqual(undefined)
+    expect(order_data.id).not.toBeNull();
   })
 
   it("should get all orders", async () => {
@@ -177,7 +177,7 @@ describe('orders handler', () => {
     await request
       .delete(`/orders/${order_data.id}`)
       .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)
+      .expect(204)
     const orders_in_db = (await request
       .get('/orders')
       .set({ 'Authorization': 'Bearer ' + token })

@@ -68,8 +68,8 @@ describe('users handler', () => {
     const response = await request
       .get(`/users/${user_data.id}/current`)
       .set({'Authorization': 'Bearer ' + token})
-      .expect(200)
-    expect(response.body).toEqual('')
+      .expect(400)
+    expect(response.body).toEqual(`Could not get current order for user ${user_data.id}. Error: Error: table returned null`)
   })
 
   it(`should get all user's completed orders`, async () => {

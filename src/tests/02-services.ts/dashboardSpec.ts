@@ -1,4 +1,4 @@
-import { Order, Status, Store as OrderDB } from '../../models/order';
+import { Order, Store as OrderDB } from '../../models/order';
 import { Product, Store as ProductDB } from '../../models/product';
 import { User, Store as UserDB } from '../../models/user';
 import { DashboardQueries } from '../../services/dashboard';
@@ -23,20 +23,24 @@ describe("dashboard functionality", () => {
     it("should get current order", async () => {
       const active_order: Order = await (new OrderDB).create({
         user_id: String(user_data.id),
-        status: Status.active,
+        status: 'active',
       })
       const current_order: Order = await dashboardQueries.currentOrderByUser(String(user_data.id));
-      expect(current_order).toEqual(active_order);
-      await (new OrderDB).delete(String(active_order.id))
+      expect(current_order.id).toEqual(active_order.id);
+      expect(current_order.user_id).toEqual(active_order.user_id);
+      expect(current_order.status).toEqual(active_order.status);
+      await (new OrderDB).delete(active_order.id)
     })
     it("should get all completed orders", async () => {
       const complete_order = await (new OrderDB).create({
         user_id: String(user_data.id),
-        status: Status.complete,
+        status: 'complete',
       })
       const completed_orders: Order[] = await dashboardQueries.compOrdersByUser(String(user_data.id));
-      expect(completed_orders).toEqual([complete_order]);
-      await (new OrderDB).delete(String(complete_order.id))
+      expect(completed_orders[0].id).toEqual(complete_order.id);
+      expect(completed_orders[0].user_id).toEqual(complete_order.user_id);
+      expect(completed_orders[0].status).toEqual(complete_order.status);
+      await (new OrderDB).delete(complete_order.id);
     })
   })
 

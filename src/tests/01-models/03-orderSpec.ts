@@ -1,4 +1,4 @@
-import { Order, Status, Store as OrderDB } from '../../models/order';
+import { Order, Store as OrderDB } from '../../models/order';
 import { User, Store as UserDB } from '../../models/user';
 
 const orderDB: OrderDB = new OrderDB();
@@ -10,9 +10,9 @@ describe("order model", () => {
     password: "some string",
   }
 
-  const order: Order = {
+  const order = {
     user_id: "2",
-    status: Status.active,
+    status: 'active',
   }
 
   beforeAll(async () => {
@@ -30,22 +30,20 @@ describe("order model", () => {
 
   it("should get all orders", async () => {
     const orders: Order[] = await orderDB.index();
-    expect(orders).toEqual([{
-      id: 1
-      , ...order
-    }]);
+    expect(orders[0].id).toEqual(1);
+    expect(orders[0].user_id).toEqual(order.user_id);
+    expect(orders[0].status).toEqual(order.status);
   })
 
   it('should get one order', async () => {
-    const order_1: Order = await orderDB.show('1');
-    expect(order_1).toEqual({
-      id: 1
-      , ...order
-    });
+    const order_1: Order = await orderDB.show(1);
+    expect(order_1.id).toEqual(1);
+    expect(order_1.user_id).toEqual(order.user_id);
+    expect(order_1.status).toEqual(order.status);
   })
   
   it('should remove the order', async () => {
-    await orderDB.delete("1")
+    await orderDB.delete(1)
     const orders: Order[] = await orderDB.index();
     expect(orders).toEqual([]);
   })

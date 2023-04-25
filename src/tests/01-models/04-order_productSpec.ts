@@ -1,6 +1,6 @@
 import { Order_Product, Store as OP_DB } from '../../models/order_product';
 import { User, Store as UserDB } from '../../models/user';
-import { Order, Status, Store as OrderDB } from '../../models/order';
+import { Order, Store as OrderDB } from '../../models/order';
 import { Product, Store as ProductDB } from '../../models/product';
 
 const opDB = new OP_DB();
@@ -18,9 +18,9 @@ describe("order_product model", () => {
     password: "some string",
   }
 
-  const order: Order = {
+  const order = {
     user_id: "3",
-    status: Status.active,
+    status: 'active',
   }
 
   const product = {
@@ -36,7 +36,7 @@ describe("order_product model", () => {
   })
 
   afterAll(async () => {
-    await (new OrderDB()).delete("2");
+    await (new OrderDB()).delete(2);
     await (new UserDB()).delete(3);
     await (new ProductDB()).delete(2);
   })

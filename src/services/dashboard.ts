@@ -1,5 +1,5 @@
 import Client from '../database'
-import { Order, Status } from '../models/order';
+import { Order } from '../models/order';
 import { Product } from '../models/product';
 
 export class DashboardQueries {
@@ -33,14 +33,13 @@ export class DashboardQueries {
 
   async currentOrderByUser(user_id: string): Promise<Order> {
     try {
-      const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)'
-      const conn = await Client.connect()
-
-      const result = await conn.query(sql, [user_id, Status.active])
-
-      conn.release()
-
-      return result.rows[0]
+      const order: Order = await Order.findOne({
+        where: {
+          user_id: user_id,
+          status: 'active'
+        }
+      }) || (() => { throw new Error(`table returned null`) })();
+      return order;
     } catch (err) {
       throw new Error(`Could not get current order for user ${user_id}. Error: ${err}`)
     }
@@ -48,14 +47,13 @@ export class DashboardQueries {
 
   async compOrdersByUser(user_id: string): Promise<Order[]> {
     try {
-      const sql = 'SELECT * FROM orders WHERE user_id=($1) AND status=($2)'
-      const conn = await Client.connect()
-
-      const result = await conn.query(sql, [user_id, Status.complete])
-
-      conn.release()
-
-      return result.rows
+      const orders: Order[] = await Order.findAll({
+        where: {
+          user_id: user_id,
+          status: 'complete'
+        }
+      });
+      return orders;
     } catch (err) {
       throw new Error(`Could not get completed orders for user ${user_id}. Error: ${err}`)
     }

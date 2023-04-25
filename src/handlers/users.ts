@@ -66,8 +66,9 @@ const destroy = async (req: Request, res: Response): Promise<void> => {
 
 const currentOrder = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id: string = req.params.id
-    const order: Order = await dashboard.currentOrderByUser(id)
+    const id: string = req.params.id;
+    const order: Order = await dashboard.currentOrderByUser(id);
+    console.log('current' + order);
     res.json(order)
   } catch (err: unknown) {
     res.status(400)
@@ -78,8 +79,9 @@ const currentOrder = async (req: Request, res: Response): Promise<void> => {
 
 const completedOrders = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id: string = req.params.id
-    const orders: Order[] = await dashboard.compOrdersByUser(id)
+    const id: string = req.params.id;
+    const orders: Order[] = await dashboard.compOrdersByUser(id);
+    console.log('complete: ' + orders);
     res.json(orders)
   } catch (err: unknown) {
     res.status(400)
