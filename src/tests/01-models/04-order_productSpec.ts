@@ -23,7 +23,7 @@ describe("order_product model", () => {
     status: Status.active,
   }
 
-  const product: Product = {
+  const product = {
     name: "laptop",
     price: 1050,
     category: "electronics",
@@ -38,7 +38,7 @@ describe("order_product model", () => {
   afterAll(async () => {
     await (new OrderDB()).delete("2");
     await (new UserDB()).delete(3);
-    await (new ProductDB()).delete("2");
+    await (new ProductDB()).delete(2);
   })
 
 

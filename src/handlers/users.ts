@@ -16,8 +16,8 @@ const index = async (_req: Request, res: Response): Promise<void> => {
     res.json(users)
   } catch (err: unknown) {
     res.status(400)
-    if(err instanceof Error)
-    res.json(err?.message)
+    if (err instanceof Error)
+      res.json(err?.message)
   }
 }
 
@@ -28,8 +28,8 @@ const show = async (req: Request, res: Response): Promise<void> => {
     res.json(user)
   } catch (err: unknown) {
     res.status(400)
-    if(err instanceof Error)
-    res.json(err?.message)
+    if (err instanceof Error)
+      res.json(err?.message)
   }
 }
 
@@ -46,20 +46,21 @@ const create = async (req: Request, res: Response): Promise<void> => {
     res.status(201).json(token)
   } catch (err: unknown) {
     res.status(400)
-    if(err instanceof Error)
-    res.json(err?.message)
+    if (err instanceof Error)
+      res.json(err?.message)
   }
 }
 
 const destroy = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = Number(req.params.id)
-    await usersDB.delete(id)
-    res.status(204).json()
+    if (!(await usersDB.delete(id)))
+      (() => { throw new Error(`Could not delete user ${id}`) })();
+    res.status(204).end();
   } catch (err: unknown) {
     res.status(400)
-    if(err instanceof Error)
-    res.json(err?.message)
+    if (err instanceof Error)
+      res.json(err?.message)
   }
 }
 
@@ -70,8 +71,8 @@ const currentOrder = async (req: Request, res: Response): Promise<void> => {
     res.json(order)
   } catch (err: unknown) {
     res.status(400)
-    if(err instanceof Error)
-    res.json(err?.message)
+    if (err instanceof Error)
+      res.json(err?.message)
   }
 }
 
@@ -82,8 +83,8 @@ const completedOrders = async (req: Request, res: Response): Promise<void> => {
     res.json(orders)
   } catch (err: unknown) {
     res.status(400)
-    if(err instanceof Error)
-    res.json(err?.message)
+    if (err instanceof Error)
+      res.json(err?.message)
   }
 }
 

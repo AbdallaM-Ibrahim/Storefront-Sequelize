@@ -77,7 +77,7 @@ describe('orders handler', () => {
   describe("Products inside an order", () => {
     let order_product: Order_Product
 
-    const product: Product = {
+    const product = {
       name: 'John',
       price: 1050,
       category: "perfume"
@@ -128,7 +128,7 @@ describe('orders handler', () => {
       await request
         .delete(`/products/${product_data.id}`)
         .set({ 'Authorization': 'Bearer ' + token })
-        .expect(200)
+        .expect(204)
       await request
         .delete(`/users/${user_data.id}`)
         .set({ 'Authorization': 'Bearer ' + token })

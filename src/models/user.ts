@@ -48,7 +48,7 @@ export class Store {
       const user: User = await User.findByPk(id) || (() => { throw new Error(`table returned null`) })();
       return user;
     } catch (err) {
-      throw new Error(`Could not find user ${id}. Error: ${err}`)
+      throw new Error(`Could not find user ${id}, ${err}`)
     }
   }
 
@@ -62,7 +62,7 @@ export class Store {
       const newUser: User = await User.create(user);
       return newUser;
     } catch (err) {
-      throw new Error(`Could not add new user ${user.firstname}. Error: ${err}`)
+      throw new Error(`Could not add new user ${user.firstname}, ${err}`)
     }
   }
 
@@ -75,25 +75,26 @@ export class Store {
       }
       return null;
     } catch (err) {
-      throw new Error(`Could not authenticate user ${id}. Error: ${err}`);
+      throw new Error(`Could not authenticate user ${id}, ${err}`);
     }
   }
 
-  async update(user: { id: number; firstname: string; lastname: string; password: string; }): Promise<number> {
-    const [updatedUser] = await User.update(user, {
-      where: {
-        id: user.id,
-      },
-    });
-    return updatedUser;
+  async update(id: number , user: {firstname: string; lastname: string; password: string; }): Promise<User> {
+    try {
+      const userToUpdate = await this.show(id);
+      return (await userToUpdate.update(user));
+    } catch(err) {
+      throw new Error(`Could not update user ${id}, ${err}`);
+    }
   }
 
-  async delete(id: number): Promise<number> {
-    const deletedUser = await User.destroy({
-      where: {
-        id: id,
-      },
-    });
-    return deletedUser;
+  async delete(id: number): Promise<boolean> {
+    try {
+      const user: User = await this.show(id);
+      await user.destroy();
+      return true;
+    } catch(err) {
+      throw new Error(`Could not delete user ${id}, ${err}`);
+    }
   }
 }

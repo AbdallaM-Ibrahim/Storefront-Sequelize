@@ -42,7 +42,7 @@ describe("dashboard functionality", () => {
 
   describe("product dashboard", () => {
 
-    const product: Product = {
+    const product = {
       name: "laptop",
       price: 1050,
       category: "electronics",
@@ -51,11 +51,11 @@ describe("dashboard functionality", () => {
 
     beforeAll(async () => {
       product_data = await (new ProductDB).create(product);
-      expect(product_data.id).not.toBe(undefined);
+      expect(product_data.id).not.toBeNull();
     })
 
     afterAll(async () => {
-      await (new ProductDB).delete(String(product_data.id));
+      await (new ProductDB).delete(product_data.id);
       const products: Product[] = await (new ProductDB).index();
       expect(products).toEqual([]);
     })
@@ -67,7 +67,10 @@ describe("dashboard functionality", () => {
 
     it('should get product of specific category', async () => {
       const products: Product[] = await dashboardQueries.productsByCategory('electronics');
-      expect(products).toEqual([product_data]);
+      expect(products[0].id).toEqual(product_data.id);
+      expect(products[0].name).toEqual(product_data.name);
+      expect(products[0].price).toEqual(product_data.price);
+      expect(products[0].category).toEqual(product_data.category);
     })
   })
 })

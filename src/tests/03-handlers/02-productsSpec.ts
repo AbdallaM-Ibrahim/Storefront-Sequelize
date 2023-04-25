@@ -7,7 +7,7 @@ import { config } from '../../config/config';
 const request = supertest(app);
 
 describe('products handler', () => {
-  const product: Product = {
+  const product = {
     name: 'John',
     price: 1050,
     category: "perfume"
@@ -54,7 +54,7 @@ describe('products handler', () => {
       .send(product)
       .expect(201);
     product_data = response.body;
-    expect(product_data.id).not.toEqual(undefined)
+    expect(product_data.id).not.toBeNull();
   })
 
   it("should get all products", async () => {
@@ -77,7 +77,7 @@ describe('products handler', () => {
     await request
       .delete(`/products/${product_data.id}`)
       .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)
+      .expect(204)
     const products_in_db = (await request
       .get('/products')
       .set({ 'Authorization': 'Bearer ' + token })

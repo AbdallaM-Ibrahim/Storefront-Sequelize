@@ -1,6 +1,6 @@
 .env
 .manifest
-.vscode/
+.vscode/*
 node_modules/
 build/
 
