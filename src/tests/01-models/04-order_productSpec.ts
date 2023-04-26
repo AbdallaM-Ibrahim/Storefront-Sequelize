@@ -1,14 +1,14 @@
 import { Order_Product, Store as OP_DB } from '../../models/order_product';
 import { Store as UserDB } from '../../models/user';
-import { Store as OrderDB } from '../../models/order';
+import { Store as OrderDB, Status } from '../../models/order';
 import { Store as ProductDB } from '../../models/product';
 
 const opDB = new OP_DB();
 
 describe('order_product model', () => {
   const order_product = {
-    order_id: '2',
-    product_id: '2',
+    order_id: 2,
+    product_id: 2,
     quantity: 3
   };
 
@@ -19,8 +19,8 @@ describe('order_product model', () => {
   };
 
   const order = {
-    user_id: '3',
-    status: 'active'
+    user_id: 3,
+    status: Status.active
   };
 
   const product = {

@@ -58,7 +58,7 @@ const destroy = async (req: Request, res: Response): Promise<void> => {
 
 const getOrderProducts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const order_id: string = req.params.order_id;
+    const order_id = Number(req.params.order_id);
 
     const thisOrderProducts: Order_Product[] =
       await order_product_DB.getByOrder(order_id);
@@ -72,9 +72,9 @@ const getOrderProducts = async (req: Request, res: Response): Promise<void> => {
 const addProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const order_product = {
-      order_id: req.params.order_id,
-      product_id: req.body.product_id,
-      quantity: req.body.quantity
+      order_id: Number(req.params.order_id),
+      product_id: Number(req.body.product_id),
+      quantity: Number(req.body.quantity)
     };
 
     const newOP: Order_Product = await order_product_DB.create(order_product);
@@ -88,8 +88,8 @@ const addProduct = async (req: Request, res: Response): Promise<void> => {
 const removeProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const order_product = await order_product_DB.delete(
-      req.params.order_id,
-      req.params.product_id
+      Number(req.params.order_id),
+      Number(req.params.product_id)
     );
     res.json(order_product);
   } catch (err: unknown) {

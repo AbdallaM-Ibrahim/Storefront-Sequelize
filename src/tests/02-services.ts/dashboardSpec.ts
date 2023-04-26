@@ -1,4 +1,4 @@
-import { Order, Store as OrderDB } from '../../models/order';
+import { Order, Status, Store as OrderDB } from '../../models/order';
 import { Product, Store as ProductDB } from '../../models/product';
 import { User, Store as UserDB } from '../../models/user';
 import { PopularProduct, DashboardQueries } from '../../services/dashboard';
@@ -22,8 +22,8 @@ describe('dashboard functionality', () => {
 
     it('should get current order', async () => {
       const active_order: Order = await new OrderDB().create({
-        user_id: String(user_data.id),
-        status: 'active'
+        user_id: user_data.id,
+        status: Status.active
       });
       const current_order: Order = await dashboardQueries.currentOrderByUser(
         String(user_data.id)
@@ -35,8 +35,8 @@ describe('dashboard functionality', () => {
     });
     it('should get all completed orders', async () => {
       const complete_order = await new OrderDB().create({
-        user_id: String(user_data.id),
-        status: 'complete'
+        user_id: user_data.id,
+        status: Status.complete
       });
       const completed_orders: Order[] = await dashboardQueries.compOrdersByUser(
         String(user_data.id)

@@ -70,8 +70,8 @@ describe('orders handler', () => {
 
   describe('Products inside an order', () => {
     let order_product: {
-      order_id: string;
-      product_id: string;
+      order_id: number;
+      product_id: number;
       quantity: number;
     };
 
@@ -108,8 +108,8 @@ describe('orders handler', () => {
         .expect(201);
       product_data = response.body;
       order_product = {
-        order_id: String(order_data.id),
-        product_id: String(product_data.id),
+        order_id: order_data.id,
+        product_id: product_data.id,
         quantity: 3
       };
     });

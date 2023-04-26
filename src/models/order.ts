@@ -2,10 +2,15 @@ import { sequelize } from '../sequelize';
 import { Model, DataTypes } from 'sequelize';
 import { User } from './user';
 
+export enum Status {
+  active = 'active',
+  complete = 'complete'
+}
+
 export class Order extends Model {
   public id!: number;
-  public user_id!: string;
-  public status!: string;
+  public user_id!: number;
+  public status!: Status;
 }
 
 Order.init(
@@ -16,7 +21,7 @@ Order.init(
       primaryKey: true
     },
     user_id: {
-      type: new DataTypes.STRING(128),
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
         model: User,
@@ -24,7 +29,8 @@ Order.init(
       }
     },
     status: {
-      type: new DataTypes.ENUM('active', 'complete'),
+      type: new DataTypes.ENUM,
+      values: Object.values(Status),
       allowNull: false
     }
   },
@@ -60,7 +66,7 @@ export class Store {
     }
   }
 
-  async create(order: { user_id: string; status: string }): Promise<Order> {
+  async create(order: { user_id: number; status: Status }): Promise<Order> {
     try {
       return await Order.create(order);
     } catch (err) {
@@ -80,7 +86,7 @@ export class Store {
 
   async update(
     id: number,
-    order: { user_id: string; status: string }
+    order: { user_id: number; status: string }
   ): Promise<Order> {
     try {
       const oldOrder: Order = await this.show(id);

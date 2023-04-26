@@ -1,4 +1,4 @@
-import { Order, Store as OrderDB } from '../../models/order';
+import { Order, Status, Store as OrderDB } from '../../models/order';
 import { Store as UserDB } from '../../models/user';
 
 const orderDB: OrderDB = new OrderDB();
@@ -11,8 +11,8 @@ describe('order model', () => {
   };
 
   const order = {
-    user_id: '2',
-    status: 'active'
+    user_id: 2,
+    status: Status.active
   };
 
   beforeAll(async () => {
