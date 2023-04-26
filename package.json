@@ -19,10 +19,12 @@
     "bcrypt": "^5.1.0",
     "body-parser": "^1.19.0",
     "db-migrate": "^0.11.13",
+    "db-migrate-mysql": "^2.2.0",
     "db-migrate-pg": "^1.2.2",
     "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "jsonwebtoken": "^9.0.0",
+    "mysql2": "^3.2.4",
     "pg": "^8.10.0",
     "sequelize": "^6.31.0"
   },
