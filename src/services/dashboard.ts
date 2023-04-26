@@ -1,47 +1,78 @@
-import Client from '../database'
 import { Order } from '../models/order';
 import { Product } from '../models/product';
+import { Order_Product } from '../models/order_product';
+import { sequelize } from '../sequelize';
+
+export type PopularProduct = {
+  product: Product;
+  total: number;
+};
 
 export class DashboardQueries {
-  async mostPopularProducts(): Promise<Product[]> {
+  async mostPopularProducts(): Promise<PopularProduct[]> {
     try {
-      const sql = 'SELECT p.*, SUM(op.quantity) FROM products AS p JOIN order_products AS op ON p.id=op.product_id GROUP BY op.product_id,p.id ORDER BY SUM(op.quantity) DESC LIMIT 5;';
-      const conn = await Client.connect()
+      const products = (await Order_Product.findAll({
+        attributes: [
+          'product_id',
+          [sequelize.col('Product.name'), 'product_name'],
+          [sequelize.fn('SUM', sequelize.col('quantity')), 'total']
+        ],
+        include: [
+          {
+            model: Product,
+            attributes: ['id', 'name']
+          }
+        ],
+        group: ['Order_Product.product_id', 'Product.id'],
+        order: [[sequelize.literal('total'), 'DESC']],
+        limit: 5
+      })) as unknown as PopularProduct[];
+      return products;
+      // const sql = 'SELECT p.*, SUM(op.quantity) FROM products AS p JOIN order_products AS op ON p.id=op.product_id GROUP BY op.product_id,p.id ORDER BY SUM(op.quantity) DESC LIMIT 5;';
+      // const conn = await Client.connect()
 
-      const result = await conn.query(sql)
+      // const result = await conn.query(sql)
 
-      conn.release()
+      // conn.release()
 
-      return result.rows
+      // return result.rows
     } catch (err) {
-      throw new Error(`Could not get products. Error: ${err}`)
+      throw new Error(`Could not get products. Error: ${err}`);
     }
   }
-  
+
   async productsByCategory(category: string): Promise<Product[]> {
     try {
       const products: Product[] = await Product.findAll({
         where: {
           category: category
         }
-      })
+      });
       return products;
     } catch (err) {
-      throw new Error(`Could not get products with category ${category}. Error: ${err}`)
+      throw new Error(
+        `Could not get products with category ${category}. Error: ${err}`
+      );
     }
   }
 
   async currentOrderByUser(user_id: string): Promise<Order> {
     try {
-      const order: Order = await Order.findOne({
-        where: {
-          user_id: user_id,
-          status: 'active'
-        }
-      }) || (() => { throw new Error(`table returned null`) })();
+      const order: Order =
+        (await Order.findOne({
+          where: {
+            user_id: user_id,
+            status: 'active'
+          }
+        })) ||
+        (() => {
+          throw new Error(`table returned null`);
+        })();
       return order;
     } catch (err) {
-      throw new Error(`Could not get current order for user ${user_id}. Error: ${err}`)
+      throw new Error(
+        `Could not get current order for user ${user_id}. Error: ${err}`
+      );
     }
   }
 
@@ -55,7 +86,9 @@ export class DashboardQueries {
       });
       return orders;
     } catch (err) {
-      throw new Error(`Could not get completed orders for user ${user_id}. Error: ${err}`)
+      throw new Error(
+        `Could not get completed orders for user ${user_id}. Error: ${err}`
+      );
     }
   }
 }

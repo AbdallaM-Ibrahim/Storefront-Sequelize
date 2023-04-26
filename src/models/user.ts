@@ -1,7 +1,7 @@
-import { sequelize } from "../sequelize";
-import { Model, DataTypes } from "sequelize";
+import { sequelize } from '../sequelize';
+import { Model, DataTypes } from 'sequelize';
 import { config } from '../config/config';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
 export class User extends Model {
   public id!: number;
@@ -15,25 +15,25 @@ User.init(
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
-      primaryKey: true,
+      primaryKey: true
     },
     firstname: {
       type: new DataTypes.STRING(128),
-      allowNull: false,
+      allowNull: false
     },
     lastname: {
       type: new DataTypes.STRING(128),
-      allowNull: false,
+      allowNull: false
     },
     password: {
       type: new DataTypes.STRING(256),
-      allowNull: false,
-    },
+      allowNull: false
+    }
   },
   {
     timestamps: false,
-    tableName: "users",
-    sequelize,
+    tableName: 'users',
+    sequelize
   }
 );
 
@@ -45,14 +45,22 @@ export class Store {
 
   async show(id: number): Promise<User> {
     try {
-      const user: User = await User.findByPk(id) || (() => { throw new Error(`table returned null`) })();
+      const user: User =
+        (await User.findByPk(id)) ||
+        (() => {
+          throw new Error(`table returned null`);
+        })();
       return user;
     } catch (err) {
-      throw new Error(`Could not find user ${id}, ${err}`)
+      throw new Error(`Could not find user ${id}, ${err}`);
     }
   }
 
-  async create(user: { firstname: string; lastname: string; password: string; }): Promise<User> {
+  async create(user: {
+    firstname: string;
+    lastname: string;
+    password: string;
+  }): Promise<User> {
     try {
       const { pepper, salt_rounds } = config;
       user.password = bcrypt.hashSync(
@@ -62,7 +70,7 @@ export class Store {
       const newUser: User = await User.create(user);
       return newUser;
     } catch (err) {
-      throw new Error(`Could not add new user ${user.firstname}, ${err}`)
+      throw new Error(`Could not add new user ${user.firstname}, ${err}`);
     }
   }
 
@@ -79,11 +87,14 @@ export class Store {
     }
   }
 
-  async update(id: number , user: {firstname: string; lastname: string; password: string; }): Promise<User> {
+  async update(
+    id: number,
+    user: { firstname: string; lastname: string; password: string }
+  ): Promise<User> {
     try {
       const userToUpdate = await this.show(id);
-      return (await userToUpdate.update(user));
-    } catch(err) {
+      return await userToUpdate.update(user);
+    } catch (err) {
       throw new Error(`Could not update user ${id}, ${err}`);
     }
   }
@@ -93,7 +104,7 @@ export class Store {
       const user: User = await this.show(id);
       await user.destroy();
       return true;
-    } catch(err) {
+    } catch (err) {
       throw new Error(`Could not delete user ${id}, ${err}`);
     }
   }

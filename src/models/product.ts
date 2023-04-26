@@ -1,5 +1,5 @@
-import { sequelize } from "../sequelize";
-import { Model, DataTypes } from "sequelize";
+import { sequelize } from '../sequelize';
+import { Model, DataTypes } from 'sequelize';
 
 export class Product extends Model {
   public id!: number;
@@ -13,32 +13,32 @@ Product.init(
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
-      primaryKey: true,
+      primaryKey: true
     },
     name: {
       type: new DataTypes.STRING(128),
-      allowNull: false,
+      allowNull: false
     },
     price: {
-      type: new DataTypes.FLOAT,
-      allowNull: false,
+      type: new DataTypes.FLOAT(),
+      allowNull: false
     },
     category: {
       type: new DataTypes.STRING(128),
-      allowNull: false,
-    },
+      allowNull: false
+    }
   },
   {
     timestamps: false,
-    tableName: "products",
-    sequelize,
+    tableName: 'products',
+    sequelize
   }
 );
 
 export class Store {
   async index(): Promise<Product[]> {
     try {
-      return (await Product.findAll());
+      return await Product.findAll();
     } catch (err) {
       throw new Error(`Could not get products, ${err}`);
     }
@@ -46,17 +46,24 @@ export class Store {
 
   async show(id: number): Promise<Product> {
     try {
-      const product: Product = await Product.findByPk(id) ||
-        (() => { throw new Error(`table returned null`) })();
+      const product: Product =
+        (await Product.findByPk(id)) ||
+        (() => {
+          throw new Error(`table returned null`);
+        })();
       return product;
     } catch (err) {
       throw new Error(`Could not find product ${id}, ${err}`);
     }
   }
 
-  async create(product: { name: string; price: number; category: string; }): Promise<Product> {
+  async create(product: {
+    name: string;
+    price: number;
+    category: string;
+  }): Promise<Product> {
     try {
-      return (await Product.create(product));
+      return await Product.create(product);
     } catch (err) {
       throw new Error(`Could not create product ${product.name}, ${err}`);
     }
@@ -72,10 +79,13 @@ export class Store {
     }
   }
 
-  async update(id: number, product: { name: string; price: number; category: string; }): Promise<Product> {
+  async update(
+    id: number,
+    product: { name: string; price: number; category: string }
+  ): Promise<Product> {
     try {
       const updatedProduct: Product = await this.show(id);
-      return (await updatedProduct.update(product));
+      return await updatedProduct.update(product);
     } catch (err) {
       throw new Error(`Could not update product ${id}, ${err}`);
     }

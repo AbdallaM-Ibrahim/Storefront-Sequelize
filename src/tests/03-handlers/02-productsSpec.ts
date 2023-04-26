@@ -10,80 +10,74 @@ describe('products handler', () => {
   const product = {
     name: 'John',
     price: 1050,
-    category: "perfume"
-  }
+    category: 'perfume'
+  };
   const user = {
     firstname: 'John',
-    lastname: "Wick",
-    password: "password123"
-  }
+    lastname: 'Wick',
+    password: 'password123'
+  };
 
   let product_data: Product;
 
   type Decoded_Token = {
-    user: User,
-    iat: number
-  }
+    user: User;
+    iat: number;
+  };
   let token: string;
   let user_data: User;
 
   beforeAll(async () => {
-    token = (
-      await request
-        .post('/users')
-        .send(user)
-        .expect(201)
-    ).body;
-    user_data = (jwt.verify(
-      token,
-      config.token_secret as Secret
-    ) as Decoded_Token).user
-  })
+    token = (await request.post('/users').send(user).expect(201)).body;
+    user_data = (
+      jwt.verify(token, config.token_secret as Secret) as Decoded_Token
+    ).user;
+  });
 
   afterAll(async () => {
     await request
       .delete(`/users/${user_data.id}`)
-      .set({ 'Authorization': 'Bearer ' + token })
-      .expect(204)
-  })
+      .set({ Authorization: 'Bearer ' + token })
+      .expect(204);
+  });
 
-  it("should create product", async () => {
+  it('should create product', async () => {
     const response = await request
       .post('/products')
-      .set({ 'Authorization': 'Bearer ' + token })
+      .set({ Authorization: 'Bearer ' + token })
       .send(product)
       .expect(201);
     product_data = response.body;
     expect(product_data.id).not.toBeNull();
-  })
+  });
 
-  it("should get all products", async () => {
+  it('should get all products', async () => {
     const response = await request
       .get('/products')
-      .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)
-    expect(response.body).toEqual([product_data])
-  })
+      .set({ Authorization: 'Bearer ' + token })
+      .expect(200);
+    expect(response.body).toEqual([product_data]);
+  });
 
-  it("should get one product", async () => {
+  it('should get one product', async () => {
     const response = await request
       .get(`/products/${product_data.id}`)
-      .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)
-    expect(response.body).toEqual(product_data)
-  })
+      .set({ Authorization: 'Bearer ' + token })
+      .expect(200);
+    expect(response.body).toEqual(product_data);
+  });
 
-  it("should get delete product", async () => {
+  it('should get delete product', async () => {
     await request
       .delete(`/products/${product_data.id}`)
-      .set({ 'Authorization': 'Bearer ' + token })
-      .expect(204)
-    const products_in_db = (await request
-      .get('/products')
-      .set({ 'Authorization': 'Bearer ' + token })
-      .expect(200)).body
-    expect(products_in_db).toEqual([])
-  })
-
-
-})
+      .set({ Authorization: 'Bearer ' + token })
+      .expect(204);
+    const products_in_db = (
+      await request
+        .get('/products')
+        .set({ Authorization: 'Bearer ' + token })
+        .expect(200)
+    ).body;
+    expect(products_in_db).toEqual([]);
+  });
+});

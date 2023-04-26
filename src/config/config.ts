@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const config = {
@@ -13,10 +13,10 @@ export const config = {
   bcrypt_password: `${process.env.BCRYPT_PASSWORD}`,
   salt_rounds: Number(process.env.SALT_ROUNDS),
   token_secret: `${process.env.TOKEN_SECRET}`,
-  pepper: `${process.env.PEPPER}`,
+  pepper: `${process.env.PEPPER}`
 };
 
-if(config.env === 'test') {
+if (config.env === 'test') {
   config.database = `${process.env.DB_NAME_TEST}`;
   config.port = Number(process.env.PORT_TEST);
 }

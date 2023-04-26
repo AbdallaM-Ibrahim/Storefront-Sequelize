@@ -1,5 +1,6 @@
 import { sequelize } from '../sequelize';
 import { Model, DataTypes } from 'sequelize';
+import { User } from './user';
 
 export class Order extends Model {
   public id!: number;
@@ -12,28 +13,35 @@ Order.init(
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
-      primaryKey: true,
+      primaryKey: true
     },
     user_id: {
       type: new DataTypes.STRING(128),
       allowNull: false,
+      references: {
+        model: User,
+        key: 'id'
+      }
     },
     status: {
       type: new DataTypes.ENUM('active', 'complete'),
-      allowNull: false,
-    },
+      allowNull: false
+    }
   },
   {
     timestamps: false,
     tableName: 'orders',
-    sequelize,
+    sequelize
   }
 );
+
+Order.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(Order, { foreignKey: 'user_id' });
 
 export class Store {
   async index(): Promise<Order[]> {
     try {
-      return (await Order.findAll());
+      return await Order.findAll();
     } catch (err) {
       throw new Error(`Could not get orders, ${err}`);
     }
@@ -41,17 +49,20 @@ export class Store {
 
   async show(id: number): Promise<Order> {
     try {
-      const order: Order = await Order.findByPk(id) ||
-        (() => { throw new Error(`table returned null`) })();
+      const order: Order =
+        (await Order.findByPk(id)) ||
+        (() => {
+          throw new Error(`table returned null`);
+        })();
       return order;
     } catch (err) {
       throw new Error(`Could not find order ${id}, ${err}`);
     }
   }
 
-  async create(order: { user_id: string; status: string; }): Promise<Order> {
+  async create(order: { user_id: string; status: string }): Promise<Order> {
     try {
-      return (await Order.create(order));
+      return await Order.create(order);
     } catch (err) {
       throw new Error(`Could not add new order for ${order.user_id}, ${err}`);
     }
@@ -67,10 +78,13 @@ export class Store {
     }
   }
 
-  async update(id: number, order: { user_id: string; status: string; }): Promise<Order> {
+  async update(
+    id: number,
+    order: { user_id: string; status: string }
+  ): Promise<Order> {
     try {
       const oldOrder: Order = await this.show(id);
-      return (await oldOrder.update(order));
+      return await oldOrder.update(order);
     } catch (err) {
       throw new Error(`Could not update order ${id}, ${err}`);
     }

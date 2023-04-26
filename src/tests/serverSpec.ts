@@ -6,4 +6,4 @@ describe('Server', () => {
   it('should have status 200', async (): Promise<void> => {
     await request.get('/').expect(200);
   });
-})
+});
