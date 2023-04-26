@@ -33,16 +33,16 @@ const app: express.Application = express();
 
 app.use(bodyParser.json());
 
-// const logger = (req: Request, res: Response, next: NextFunction) => {
-//   console.log(
-//     req.method,
-//     req.url,
-//     'Token:' + Boolean(req.headers.authorization),
-//     'body:' + JSON.stringify(req.body)
-//   );
-//   next();
-// };
-// app.use(logger);
+const logger = (req: Request, res: Response, next: NextFunction) => {
+  console.log(
+    req.method,
+    req.url,
+    'Token:' + Boolean(req.headers.authorization),
+    'body:' + JSON.stringify(req.body)
+  );
+  next();
+};
+app.use(logger);
 
 app.get('/', function (req: Request, res: Response): void {
   res.send('Hello World!');
