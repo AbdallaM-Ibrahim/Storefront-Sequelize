@@ -4,13 +4,15 @@
     "host": {"ENV": "DB_HOST"},
     "database": {"ENV": "DB_NAME"},
     "user": {"ENV": "DB_USERNAME"},
-    "password": {"ENV": "DB_PASSWORD"}
+    "password": {"ENV": "DB_PASSWORD"},
+    "ssl": "true"
   },
   "test": {
     "driver": {"ENV": "DB_DRIVER"},
     "host": {"ENV": "DB_HOST"},
     "database": {"ENV": "DB_NAME_Test"},
     "user": {"ENV": "DB_USERNAME"},
-    "password": {"ENV": "DB_PASSWORD"}
+    "password": {"ENV": "DB_PASSWORD"},
+    "ssl": "true"
   }
 }
